@@ -13,7 +13,7 @@ Some example payloads and requests can be found in /examples
 1. Clone the repository:
 `git clone https://github.com/aetuul/blind_dumper.git`
 `cd blind_dumper`
-2. Install the requited Python libraries
+2. Install the required Python libraries
 `pip install -r requirements.txt`
 ## Configuration
 1. Configure `payload.txt` - Replace the value you want to fuzz with the keyword `FUZZ2` and the index with `FUZZ1`
