@@ -10,27 +10,36 @@ Some example payloads and requests can be found in /examples
 - Working payload
 - Working copy of a request to vulnerable page
 ## Installation
-1. Clone the repository:
-`git clone https://github.com/aetuul/blind_dumper.git`
+1. Clone the repository:<br>
+`git clone https://github.com/aetuul/blind_dumper.git`<br>
 `cd blind_dumper`
-2. Install the required Python libraries
+2. Install the required Python libraries<br>
 `pip install -r requirements.txt`
 ## Configuration
 1. Configure `payload.txt` - Replace the value you want to fuzz with the keyword `FUZZ2` and the index with `FUZZ1`
 2. Configure `request.req` - Easiest way is to copy the exploit request from Burp Suite. Insert the keyword FUZZ into your request where the payload should go
 ## Usage
-`python3 dump.py -req <path_to_req_file> -target <target_url without endpoint> -payload <path_to_payload_file> -length <data_length> [-mc <http_status_code>] [-mt <response_text>]`
+`python3 dump.py <args>`
 ## Arguments
--req (required): Path to the .req file used for making the requests.
--target (required): The target URL.
--payload (required): The payload to use with fuzzing values.
--length (required): The length of the data you're trying to dump.
--mc (optional): HTTP status code to indicate a successful request.
--mt (optional): Text in the HTTP response to indicate a successful request.
+-req (required): Path to the .req file used for making the requests<br>
+-target (required): The target URL<br>
+-payload (required): The payload to use with fuzzing values<br>
+-length (required): The length of the data you're trying to dump<br>
+-mc (optional): HTTP status code to indicate a successful request<br>
+-fc (optional): HTTP status code to indiace a failed request<br>
+-mb (optioal): Text in the HTTP response body to indicate a successful request<br>
+-mt (optional): HTTP response duration in seconds to indicate a successful request<br>
+-pi (optional): Proxy server ip<br>
+-pp (optional): Proxy server port<br>
 ## Example usage
-1. Dump data from the target using the specified request and payload, expecting the data length to be 20 characters and using HTTP status code 500 to identify successful requests
-`python3 dump.py -req request.req -target "https://<target>" -payload payload.txt -length 20 -mc 500`
-2. Extract data from the target using the specified request and payload, expecting a data length of 20 characters and identifying successful responses by the keyword "Welcome back" in the HTTP response body
+1. Dump data from the target using the specified request and payload, expecting the data length to be 20 characters, using HTTP status code 500 to identify successful requests and HTTP status code 200 to identify "failed" requests<br>
+`python3 dump.py -req request.req -target "https://<target>" -payload payload.txt -length 20 -mc 500 -fc 200`
+<br>
+2. Extract data from the target using the specified request and payload, expecting a data length of 20 characters and identifying successful responses by the keyword "Welcome back" in the HTTP response body<br>
 `python3 dump.py -req request.req -target "https://<target>" -payload payload.txt -length 20 -mb "Welcome back"`
+<br>
+3. Extract data from the target using the specified request and payload, expecting a data length of 20  characters and identifying successful responses by the response time<br>
+`python3 dump.py -req request.req -target "https://<target>" -payload payload.txt -length 20 -mt 5`
+<br>
 ## Disclaimer
 Education purposes only.
