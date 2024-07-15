@@ -40,6 +40,6 @@ Some example payloads and requests can be found in /examples
 
 3. Extract data from the target using the specified request and payload, expecting a data length of 20  characters and identifying successful responses by the response time<br>
 `python3 dump.py -req request.req -target "https://<target>" -payload payload.txt -length 20 -mt 5`
-Note that when identifying requests by the response time, the payload needs to use `>=` instead of `=`.
+Note that when identifying requests by response time, the payload needs to use `>=` instead of `=`.
 ## Disclaimer
 Education purposes only.
