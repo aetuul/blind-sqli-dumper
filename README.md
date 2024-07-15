@@ -32,15 +32,14 @@ Some example payloads and requests can be found in /examples
 -pi (optional): Proxy server ip<br>
 -pp (optional): Proxy server port<br>
 ## Example usage
-1. Dump data from the target using the specified request and payload, expecting the data length to be 20 characters, using HTTP status code 500 to identify successful requests and HTTP status code 200 to identify "failed" requests<br>
+1. Dump data from the target using the specified request and payload, expecting the data length to be 20 characters, using HTTP status code 500 to identify successful requests and HTTP status code 200 to identify "failed" requests
 `python3 dump.py -req request.req -target "https://<target>" -payload payload.txt -length 20 -mc 500 -fc 200`
-<br>
-2. Extract data from the target using the specified request and payload, expecting a data length of 20 characters and identifying successful responses by the keyword "Welcome back" in the HTTP response body<br>
+
+2. Extract data from the target using the specified request and payload, expecting a data length of 20 characters and identifying successful responses by the keyword "Welcome back" in the HTTP response body
 `python3 dump.py -req request.req -target "https://<target>" -payload payload.txt -length 20 -mb "Welcome back"`
-<br>
+
 3. Extract data from the target using the specified request and payload, expecting a data length of 20  characters and identifying successful responses by the response time<br>
 `python3 dump.py -req request.req -target "https://<target>" -payload payload.txt -length 20 -mt 5`
-<br>
 Note that when identifying requests by the response time, the payload needs to use `>=` instead of `=`.
 ## Disclaimer
 Education purposes only.
