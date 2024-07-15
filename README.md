@@ -1,6 +1,6 @@
 # Automated Blind SQLi Data Dumper
 ## Overview
-This project is a Python-based tool designed to automate the process of data dumping via blind SQL injections using binary search to narrow down the count of requests.
+This project is a Python-based tool designed to automate the process of data dumping via blind SQL injections using binary search to narrow down the count of requests. Originally created for CTF purposes.
 Some example payloads and requests can be found in /examples
 ## Features
 - Easy configuration through `payload.txt` and `request.req`
@@ -13,7 +13,7 @@ Some example payloads and requests can be found in /examples
 1. Clone the repository:
 `git clone https://github.com/aetuul/blind_dumper.git`
 `cd blind_dumper`
-2. Install the requited Python libraries
+2. Install the required Python libraries
 `pip install -r requirements.txt`
 ## Configuration
 1. Configure `payload.txt` - Replace the value you want to fuzz with the keyword `FUZZ2` and the index with `FUZZ1`
