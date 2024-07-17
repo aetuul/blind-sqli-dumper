@@ -38,6 +38,6 @@ Some example payloads and requests can be found in /examples
 `python3 dump.py -req request.req -target "https://<target>" -payload payload.txt -mb "Welcome back"`
 
 3. Extract data from the target using the specified request and payload, identifying successful responses by response time of 5 seconds<br>
-`python3 dump.py -req request.req -target "https://<target>" -payload payload.txt -length 20 -mt 5`
+`python3 dump.py -req request.req -target "https://<target>" -payload payload.txt -mt 5`
 ## Disclaimer
 Education purposes only.
