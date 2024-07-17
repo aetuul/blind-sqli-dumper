@@ -24,7 +24,6 @@ Some example payloads and requests can be found in /examples
 -req (required): Path to the .req file used for making the requests<br>
 -target (required): The target URL<br>
 -payload (required): The payload to use with fuzzing values<br>
--length (required): The length of the data you're trying to dump<br>
 -mc (optional): HTTP status code to indicate a successful request<br>
 -fc (optional): HTTP status code to indiace a failed request<br>
 -mb (optioal): Text in the HTTP response body to indicate a successful request<br>
@@ -32,14 +31,13 @@ Some example payloads and requests can be found in /examples
 -pi (optional): Proxy server ip<br>
 -pp (optional): Proxy server port<br>
 ## Example usage
-1. Dump data from the target using the specified request and payload, expecting the data length to be 20 characters, using HTTP status code 500 to identify successful requests and HTTP status code 200 to identify "failed" requests
-`python3 dump.py -req request.req -target "https://<target>" -payload payload.txt -length 20 -mc 500 -fc 200`
+1. Dump data from the target with the specified request and payload, using HTTP status code 500 to identify successful requests and HTTP status code 200 to identify "failed" requests
+`python3 dump.py -req request.req -target "https://<target>" -payload payload.txt -mc 500 -fc 200`
 
-2. Extract data from the target using the specified request and payload, expecting a data length of 20 characters and identifying successful responses by the keyword "Welcome back" in the HTTP response body
-`python3 dump.py -req request.req -target "https://<target>" -payload payload.txt -length 20 -mb "Welcome back"`
+2. Extract data from the target using the specified request and payload, identifying successful responses by the keyword "Welcome back" in the HTTP response body
+`python3 dump.py -req request.req -target "https://<target>" -payload payload.txt -mb "Welcome back"`
 
-3. Extract data from the target using the specified request and payload, expecting a data length of 20  characters and identifying successful responses by the response time<br>
+3. Extract data from the target using the specified request and payload, identifying successful responses by response time of 5 seconds<br>
 `python3 dump.py -req request.req -target "https://<target>" -payload payload.txt -length 20 -mt 5`
-Note that when identifying requests by response time, the payload needs to use `>=` instead of `=`.
 ## Disclaimer
 Education purposes only.
